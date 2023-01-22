@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 //Public routes
+Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::post('/products/{id}', [ProductController::class, 'show']);

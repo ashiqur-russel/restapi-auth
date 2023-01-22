@@ -9,6 +9,27 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+
+
+
+    /*    public function logout(Request $request)
+    {
+        auth()->user()->tokens()->delete();
+
+        return [
+            'message' => 'Logged Out!'
+        ];
+    } */
+
+    public function logout(Request $request)
+    {
+        auth()->user()->tokens()->delete();
+
+        return [
+            'message' => 'Logged out'
+        ];
+    }
+
     public function register(Request $request)
     {
         $fields = $request->validate([
@@ -35,22 +56,30 @@ class AuthController extends Controller
         return response($response, 201);
     }
 
-
-    /*    public function logout(Request $request)
+    public function login(Request $request)
     {
-        auth()->user()->tokens()->delete();
+        $fields = $request->validate([
+            'email' => 'required|string',
+            'password' => 'required|string',
 
-        return [
-            'message' => 'Logged Out!'
+        ]);
+
+        // Check email
+        $user = User::where('email', $fields['email'])->first();
+        // Check password
+        if (!$user || !Hash::check($fields['password'], $user->password)) {
+            return response([
+                'message' => 'Bad creds'
+            ], 401);
+        }
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        $response = [
+            'user' => $user,
+            'token' => $token,
+
         ];
-    } */
 
-    public function logout(Request $request)
-    {
-        auth()->user()->tokens()->delete();
-
-        return [
-            'message' => 'Logged out'
-        ];
+        return response($response, 201);
     }
 }
